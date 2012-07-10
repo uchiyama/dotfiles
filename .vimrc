@@ -45,8 +45,12 @@ au BufNewFile,BufRead * set iminsert=1
 "タブ幅をリセット
 au BufNewFile,BufRead * set tabstop=4 shiftwidth=4
 au GUIEnter * set fullscreen
+
+"javacomplete
+autocmd FileType java :setlocal omnifunc=javacomplete#Complete
+autocmd FileType java :setlocal completefunc=javacomplete#CompleteParamsInfo
 ""キーマッピング
-imap <c-o> <END>
+"imap <c-o> <END>
 imap <c-t> <HOME>
 imap <c-h> <LEFT>
 imap <c-j> <DOWN>
@@ -74,7 +78,7 @@ endfunction
 
 
 "プラグイン管理
-set rtp+=~/dotfiles/vimfiles/vundle.git/
+set rtp+=~/dotfiles/vimfiles/bundle/vundle/
 call vundle#rc()
 Bundle "vundle"
 Bundle "neocomplcache"
@@ -82,4 +86,5 @@ Bundle "opsplorer"
 Bundle "quickrun.vim"
 Bundle "CSApprox"
 Bundle "java_getset.vim"
-
+Bundle "JavaScript-syntax"
+Bundle "javacomplete"
