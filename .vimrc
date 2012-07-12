@@ -1,9 +1,10 @@
 colorscheme deep_sea
-set transparency=100
+set transparency=30
+set enc=utf8
 "新しいントを現在行と同じにする
 set autoindent
 "バックアップファイルを作るディレクトリ
-set backupdir=$HOME/vimbackup
+set nobackup
 "ファイル保存ダイアログの初期ディレクトリをバッファファイル位置に設定
 set browsedir=buffer
 "クリップボードをWindowsと連携
@@ -11,7 +12,7 @@ set clipboard=unnamed
 "Vi互換をオフ
 set nocompatible
 "スワップファイル用のディレクトリ
-set directory=$HOME/vimbackup
+set noswapfile
 "タブの代わりに空白文字を挿入する
 set expandtab
 "変更中のファイルでも、保存しないで他のファイルを表示
@@ -21,7 +22,7 @@ set incsearch
 "タブ文字、行末など不可視文字を表示する
 set list
 "listで表示される文字のフォーマットを指定する
-set listchars=eol:⏎,tab:>\ ,extends:<
+set listchars=eol:$,tab:>\ ,extends:<
 "行番号を表示する
 set number
 "閉じ括弧が入力されたとき、対応する括弧を表示する
@@ -56,35 +57,45 @@ imap <c-h> <LEFT>
 imap <c-j> <DOWN>
 imap <c-k> <UP>
 imap <c-l> <RIGHT>
-inoremap <expr><CR> <SID>Enter()
 ""補完自動起動
 "let g:neocomplcache_enable_at_startup=1
 ""エクスプローラー自動起動
 "let g:opsplorer_enable_at_startup=1
 
-"java設定
+
+
+"プラグイン管理
+set rtp+=~/.vim/vundle.git/
+call vundle#rc()
+Bundle 'git://github.com/Shougo/neocomplcache.git'
+Bundle 'CSApprox'
+Bundle 'quickrun.vim'
+Bundle 'quickfixstatus.vim'
+Bundle 'jceb/vim-hier'
+Bundle 'Shougo/vimproc'
+
+au Syntax java   source $VIMRUNTIME/syntax/java.vim
 let java_highlight_all=1
 let java_highlight_functions="style"
 let java_allow_cpp_keywords=1
 
-"中括弧スクリプト
-function! s:Enter()
-    let str = getline(".")[col(".")-2]
-    if str == '{'
-        return "\<CR>\<End>\<CR>}\<UP>\<HOME>\<END>"
-    endif
-    return "\<CR>"
+let g:hier_highlight_group_qf  = "qf_error_ucurl"
+execute "highlight qf_error_ucurl gui=undercurl guisp=Red"
+
+" quickfix に出力して、ポッポアップはしない outputter/quickfix
+" すでに quickfix ウィンドウが開いている場合は閉じるので注意
+let s:silent_quickfix = quickrun#outputter#quickfix#new()
+function! s:silent_quickfix.finish(session)
+    call call(quickrun#outputter#quickfix#new().finish, [a:session], self)
+    :cclose
+    "vim-hier の更新
+    :HierUpdate
+    " quickfix への出力後に quickfixstatus を有効に
+    :QuickfixStatusEnable
+    echo "aaa"
 endfunction
+" quickrun に登録
+call quickrun#register_outputter("silent_quickfix",s:silent_quickfix)
 
 
-"プラグイン管理
-set rtp+=~/dotfiles/vimfiles/bundle/vundle/
-call vundle#rc()
-Bundle "vundle"
-Bundle "neocomplcache"
-Bundle "opsplorer"
-Bundle "quickrun.vim"
-Bundle "CSApprox"
-Bundle "java_getset.vim"
-Bundle "JavaScript-syntax"
-Bundle "javacomplete"
+autocmd BufWritePost *.cpp :QuickRun c -outptter quickfix

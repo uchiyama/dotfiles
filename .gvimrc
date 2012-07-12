@@ -12,3 +12,7 @@ set showtabline=2
 ""透明度を変更
 map  gw :macaction selectNextWindow:
 map  gW :macaction selectPreviousWindow:
+
+let g:hier_highlight_group_qf  = "qf_error_ucurl"
+execute "highlight qf_error_ucurl gui=undercurl guisp=Red"
+
