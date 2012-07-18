@@ -1,4 +1,20 @@
 colorscheme deep_sea
+
+"プラグイン管理
+set rtp+=~/.vim/vundle.git/
+call vundle#rc()
+Bundle 'git://github.com/Shougo/neocomplcache.git'
+Bundle 'CSApprox'
+Bundle 'thinca/vim-quickrun'
+Bundle 'quickfixstatus.vim'
+Bundle 'jceb/vim-hier'
+Bundle 'Shougo/vimproc'
+Bundle 'tpope/vim-surround'
+"Bundle 'h1mesuke / unite-outline'
+
+
+
+"VIM設定
 set transparency=30
 set enc=utf8
 "新しいントを現在行と同じにする
@@ -47,9 +63,7 @@ au BufNewFile,BufRead * set iminsert=1
 au BufNewFile,BufRead * set tabstop=4 shiftwidth=4
 au GUIEnter * set fullscreen
 
-"javacomplete
-autocmd FileType java :setlocal omnifunc=javacomplete#Complete
-autocmd FileType java :setlocal completefunc=javacomplete#CompleteParamsInfo
+
 ""キーマッピング
 "imap <c-o> <END>
 imap <c-t> <HOME>
@@ -59,43 +73,59 @@ imap <c-k> <UP>
 imap <c-l> <RIGHT>
 ""補完自動起動
 "let g:neocomplcache_enable_at_startup=1
-""エクスプローラー自動起動
-"let g:opsplorer_enable_at_startup=1
 
 
-
-"プラグイン管理
-set rtp+=~/.vim/vundle.git/
-call vundle#rc()
-Bundle 'git://github.com/Shougo/neocomplcache.git'
-Bundle 'CSApprox'
-Bundle 'quickrun.vim'
-Bundle 'quickfixstatus.vim'
-Bundle 'jceb/vim-hier'
-Bundle 'Shougo/vimproc'
-
-au Syntax java   source $VIMRUNTIME/syntax/java.vim
-let java_highlight_all=1
-let java_highlight_functions="style"
-let java_allow_cpp_keywords=1
-
-let g:hier_highlight_group_qf  = "qf_error_ucurl"
-execute "highlight qf_error_ucurl gui=undercurl guisp=Red"
-
-" quickfix に出力して、ポッポアップはしない outputter/quickfix
-" すでに quickfix ウィンドウが開いている場合は閉じるので注意
+"シンタックスチェック
 let s:silent_quickfix = quickrun#outputter#quickfix#new()
 function! s:silent_quickfix.finish(session)
-    call call(quickrun#outputter#quickfix#new().finish, [a:session], self)
-    :cclose
-    "vim-hier の更新
-    :HierUpdate
-    " quickfix への出力後に quickfixstatus を有効に
-    :QuickfixStatusEnable
-    echo "aaa"
+        call call(quickrun#outputter#quickfix#new().finish, [a:session], self)
+        :cclose
+        " vim-hier の更新
+        :HierUpdate
+        " quickfix への出力後に quickfixstatus を有効に
+        :QuickfixStatusEnable
+        "Sign表示
+        "let tmpError = 
+        exe "sign define error text=>> texthl=Error"
+        for type in ['qf','lo']
+            for i in s:Getlist(0, type)
+                if i.bufnr == bufnr('%')
+                    if i.lnum > 0
+                        exe "sign place " . i.lnum . " line=" . i.lnum " name=error buffer=" . bufnr('%')
+                    endif
+                endif
+            endfor
+        endfor
 endfunction
+
+function! s:Getlist(winnr, type)
+    if a:type == 'qf'
+        return getqflist()
+    else
+        return getloclist(a:winnr)
+    endif
+endfunction
+
 " quickrun に登録
-call quickrun#register_outputter("silent_quickfix",s:silent_quickfix)
-
-
-autocmd BufWritePost *.cpp :QuickRun c -outptter quickfix
+call quickrun#register_outputter("silent_quickfix", s:silent_quickfix)
+let g:quickrun_config = {}
+let g:quickrun_config["CppSyntaxCheck_gcc"] = {
+    \ "type"  : "cpp",
+    \ "exec"      : "%c %o %s:p ", 
+    \ "command"   : "g++",
+    \ "cmdopt"    : "-fsyntax-only",
+    \ "outputter" : "silent_quickfix",
+    \ "runner"    : "vimproc",
+    \ "errorformat"    : &g:errorformat,
+\ }
+autocmd BufWritePost *.cpp,*.h,*.hpp :QuickRun CppSyntaxCheck_gcc
+autocmd BufRead *.cpp,*.h,*.hpp :QuickRun CppSyntaxCheck_gcc
+let g:quickrun_config["CppSyntaxCheck_java"] = {
+    \ "exec"      : "jikes +E %s", 
+    \ "command"   : "jikes +E",    
+    \ "outputter" : "silent_quickfix",
+    \ "runner"    : "vimproc",
+    \ "errorformat"    : &g:errorformat,
+\ }
+autocmd BufWritePost *.java :QuickRun CppSyntaxCheck_java
+autocmd BufRead *.java :QuickRun CppSyntaxCheck_java

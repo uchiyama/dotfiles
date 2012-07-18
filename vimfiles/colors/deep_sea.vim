@@ -46,7 +46,8 @@ execute "hi NonText			gui=NONE guibg=" . s:Black[3] . " guifg=" . s:LightBlue[1]
 " }
 execute "hi Comment			gui=NONE guifg=" . s:LightBlue[1]
 execute "hi Constant		gui=NONE guifg=" . s:LightBlue[2]
-execute "hi Error			gui=NONE guifg=" . s:Red[5] . " guibg=" . s:Red[0]
+execute "hi Error           gui=NONE guifg=" . s:Red[3] . " guibg=NONE"
+"execute "hi Error           gui=NONE guifg=" . s:Red[5] . " guibg=" . s:Red[0]
 execute "hi Identifier		gui=NONE guifg=" . s:LightBlue[3]
 execute "hi Ignore			gui=NONE guifg=" . s:Red[1]
 execute "hi Operator		gui=NONE guifg=" . s:LightBlue[4]
@@ -66,7 +67,7 @@ execute "hi Underlined		gui=NONE guifg=" . s:LightBlue[0]
 
 " }}}
 
-" {{{ groups
+" {{{ grous
 "
 "
 "
@@ -77,7 +78,7 @@ execute "hi Underlined		gui=NONE guifg=" . s:LightBlue[0]
 "execute "hi DiffText	
 execute "hi Directory		gui=NONE guifg=" . s:LightBlue[0]
 "execute "hi Scrollbar		TODO
-"execute "hi SignColumn
+execute "hi SignColumn      gui=NONE guifg=" . s:Red[4]
 execute "hi SpecialKey		gui=NONE guifg=" . s:LightBlue[1]
 "execute "hi SpellBad	
 "execute "hi SpellCap	
@@ -93,8 +94,8 @@ execute "hi Folded			gui=NONE guibg=" . s:LightBlue[0] . " guifg=" . s:LightBlue
 execute "hi IncSearch		gui=NONE guibg=" . s:Red[2] . " guifg=" . s:Red[0] 
 execute "hi LineNr			gui=NONE guibg=" . s:Black[3] . " guifg=" . s:LightBlue[1]
 execute "hi MatchParen		gui=NONE guibg=" . s:Red[2] 
-execute "hi ModeMsg			gui=NONE guibg=NONE guifg=" . s:LightBlue[2]
-execute "hi MoreMsg			gui=NONE guibg=NONE guifg=" . s:Red[2]
+execute "hi ModeMsg			gui=NONE guibg=NONE guifg=NONE"
+execute "hi MoreMsg			gui=NONE guibg=NONE guifg=NONE"
 execute "hi Pmenu			gui=NONE guibg=" . s:LightBlue[3] . " guifg=" . s:DarkBlue[0]
 execute "hi PmenuSbar		gui=NONE guibg=" . s:LightBlue[3] . " guifg=" . s:Red[0]
 execute "hi PmenuSel		gui=NONE guibg=" . s:LightBlue[3] . " guifg=" . s:Red[4]
@@ -108,7 +109,8 @@ execute "hi TabLineFill		gui=NONE guifg=" . s:Red[1]
 execute "hi TabLineSel		gui=NONE guibg=" . s:LightBlue[3] . " guifg=" . s:DarkBlue[0]
 execute "hi Title			gui=NONE guifg=" . s:Red[3]
 execute "hi VertSplit		gui=NONE guibg=" . s:Red[1] . " guifg=" . s:Red[4]
-execute "hi Visual			gui=NONE guibg=" . s:Red[4] . " guifg=" . s:Red[0]
+execute "hi Visual			gui=NONE guibg=" . s:Red[1] . " guifg=NONE"
+"execute "hi Visual			gui=NONE guibg=NONE guifg=" . s:Red[4]
 execute "hi VisualNOS		gui=NONE guibg=NONE"
 execute "hi WarningMsg		gui=NONE guifg=" . s:Red[3]
 execute "hi WildMenu		gui=NONE guifg=" . s:Red[0] . " guibg=" . s:Red[4]
