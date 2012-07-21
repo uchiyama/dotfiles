@@ -10,7 +10,9 @@ Bundle 'quickfixstatus.vim'
 Bundle 'jceb/vim-hier'
 Bundle 'Shougo/vimproc'
 Bundle 'tpope/vim-surround'
-"Bundle 'h1mesuke / unite-outline'
+Bundle 'Shougo/unite.vim'
+Bundle 'h1mesuke/unite-outline'
+Bundle 'taglist.vim'
 
 
 
@@ -69,31 +71,43 @@ imap <c-h> <LEFT>
 imap <c-j> <DOWN>
 imap <c-k> <UP>
 imap <c-l> <RIGHT>
+
+inoremap { {}<LEFT>
+inoremap [ []<LEFT>
+inoremap ( ()<LEFT>
+inoremap " ""<LEFT>
+inoremap ' ''<LEFT>
+vnoremap { "zdi{<C-R>z}<ESC>
+vnoremap [ "zdi[<C-R>z]<ESC>
+vnoremap ( "zdi(<C-R>z)<ESC>
+vnoremap " "zdi"<C-R>z"<ESC>
+vnoremap ' "zdi'<C-R>z'<ESC>
+
 ""補完自動起動
-"let g:neocomplcache_enable_at_startup=1
+let g:neocomplcache_enable_at_startup=1
 
 
 "シンタックスチェック
 let s:silent_quickfix = quickrun#outputter#quickfix#new()
 function! s:silent_quickfix.finish(session)
-        call call(quickrun#outputter#quickfix#new().finish, [a:session], self)
-        :cclose
-        " vim-hier の更新
-        :HierUpdate
-        " quickfix への出力後に quickfixstatus を有効に
-        :QuickfixStatusEnable
-        "Sign表示
-        "let tmpError = 
-        exe "sign define error text=>> texthl=Error"
-        for type in ['qf','lo']
-            for i in s:Getlist(0, type)
-                if i.bufnr == bufnr('%')
-                    if i.lnum > 0
-                        exe "sign place " . i.lnum . " line=" . i.lnum " name=error buffer=" . bufnr('%')
-                    endif
+    exe "sign unplace *"
+    call call(quickrun#outputter#quickfix#new().finish, [a:session], self)
+    :cclose
+    " vim-hier の更新
+    :HierUpdate
+    " quickfix への出力後に quickfixstatus を有効に
+    :QuickfixStatusEnable
+    "Sign表示
+    exe "sign define error text=>> texthl=Error"
+    for type in ['qf','lo']
+        for i in s:Getlist(0, type)
+            if i.bufnr == bufnr('%')
+                if i.lnum > 0
+                    exe "sign place " . i.lnum . " line=" . i.lnum " name=error buffer=" . bufnr('%')
                 endif
-            endfor
+            endif
         endfor
+    endfor
 endfunction
 
 function! s:Getlist(winnr, type)
@@ -104,26 +118,19 @@ function! s:Getlist(winnr, type)
     endif
 endfunction
 
+
 " quickrun に登録
 call quickrun#register_outputter("silent_quickfix", s:silent_quickfix)
 let g:quickrun_config = {}
-let g:quickrun_config["CppSyntaxCheck_gcc"] = {
-    \ "type"  : "cpp",
-    \ "exec"      : "%c %o %s:p ", 
-    \ "command"   : "g++",
-    \ "cmdopt"    : "-fsyntax-only",
+
+let g:quickrun_config["_"] = {
+    \ "errorformat" : &g:errorformat,
     \ "outputter" : "silent_quickfix",
-    \ "runner"    : "vimproc",
-    \ "errorformat"    : &g:errorformat,
+    \ "runner" : "vimproc",
 \ }
-autocmd BufWritePost *.cpp,*.h,*.hpp :QuickRun CppSyntaxCheck_gcc
-autocmd BufRead *.cpp,*.h,*.hpp :QuickRun CppSyntaxCheck_gcc
-let g:quickrun_config["CppSyntaxCheck_java"] = {
+let g:quickrun_config["java"] = {
     \ "exec"      : "jikes +E %s", 
     \ "command"   : "jikes +E",    
-    \ "outputter" : "silent_quickfix",
-    \ "runner"    : "vimproc",
-    \ "errorformat"    : &g:errorformat,
 \ }
-autocmd BufWritePost *.java :QuickRun CppSyntaxCheck_java
-autocmd BufRead *.java :QuickRun CppSyntaxCheck_java
+autocmd BufWritePost *.java,*.cpp :QuickRun
+autocmd BufRead *.java,*.cpp :Tlist | :QuickRun

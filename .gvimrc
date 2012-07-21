@@ -1,6 +1,6 @@
 colorscheme deep_sea
 set transparency=40
-set guifont=ゆたぽん（コーディング）:h16
+set guifont=Ricty\ Discord\:h16
 "フォント設定
 "set guifontwide=Osaka:h12
 "set guifont=Osaka-Mono:h14
