@@ -1,5 +1,4 @@
 colorscheme deep_sea
-
 "プラグイン管理
 set rtp+=~/.vim/vundle.git/
 call vundle#rc()
@@ -13,11 +12,13 @@ Bundle 'tpope/vim-surround'
 Bundle 'Shougo/unite.vim'
 Bundle 'h1mesuke/unite-outline'
 Bundle 'taglist.vim'
+Bundle 'tyru/open-browser.vim'
 
 
 
 "VIM設定
-set enc=utf8
+set enc=utf-8
+set fileencoding=utf-8
 "新しいントを現在行と同じにする
 set autoindent
 "バックアップファイルを作るディレクトリ
@@ -57,35 +58,31 @@ set nowrapscan
 ""ステータスバーの表示
 set statusline=0
 set statusline=%f%m%r%h%w\ [Format:%{&ff}]\ [Encode:%{&fenc}]\ [Type:%Y]\ [%l/%LL,%vC]
+
 ""日本語入力をリセット
 au BufNewFile,BufRead * set iminsert=1
 "タブ幅をリセット
 au BufNewFile,BufRead * set tabstop=4 shiftwidth=4
-au GUIEnter * set fullscreen
+""au GUIEnter * set fullscreen
 
 
 ""キーマッピング
-"imap <c-o> <END>
-imap <c-t> <HOME>
 imap <c-h> <LEFT>
 imap <c-j> <DOWN>
 imap <c-k> <UP>
 imap <c-l> <RIGHT>
+imap <F5> <ESC>:w<ENTER>:QuickRun<ENTER><ENTER>
 
 inoremap { {}<LEFT>
 inoremap [ []<LEFT>
 inoremap ( ()<LEFT>
-inoremap " ""<LEFT>
-inoremap ' ''<LEFT>
+map <F5> <ESC>:w<ENTER>:QuickRun<ENTER><ENTER>
 vnoremap { "zdi{<C-R>z}<ESC>
 vnoremap [ "zdi[<C-R>z]<ESC>
 vnoremap ( "zdi(<C-R>z)<ESC>
-vnoremap " "zdi"<C-R>z"<ESC>
-vnoremap ' "zdi'<C-R>z'<ESC>
 
 ""補完自動起動
 let g:neocomplcache_enable_at_startup=1
-
 
 "シンタックスチェック
 let s:silent_quickfix = quickrun#outputter#quickfix#new()
@@ -123,14 +120,31 @@ endfunction
 call quickrun#register_outputter("silent_quickfix", s:silent_quickfix)
 let g:quickrun_config = {}
 
+" デフォルトの設定
 let g:quickrun_config["_"] = {
     \ "errorformat" : &g:errorformat,
     \ "outputter" : "silent_quickfix",
-    \ "runner" : "vimproc",
+    \ "runner/vimproc/updatetime" : 1000,
+    \ "split": 'rightbelow 8sp'
 \ }
 let g:quickrun_config["java"] = {
     \ "exec"      : "jikes +E %s", 
     \ "command"   : "jikes +E",    
+\ }
+let g:quickrun_config["html"] = {
+    \ "command"   : "open",    
+    \ "exec"      : "%c %s", 
+    \ "outputter" : "browser",
+\ }
+let g:quickrun_config["php"] = {
+    \ "command"   : "open",    
+    \ "exec"      : "%c %s", 
+    \ "outputter" : "browser",
+\ }
+let g:quickrun_config["jsp"] = {
+    \ "command"   : "open",    
+    \ "exec"      : "%c %s", 
+    \ "outputter" : "browser",
 \ }
 autocmd BufWritePost *.java,*.cpp :QuickRun
 autocmd BufRead *.java,*.cpp :Tlist | :QuickRun
